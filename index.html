@@ -52,11 +52,77 @@
       margin-top: 20px;
       font-weight: bold;
     }
+    .emoji-panel {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .emoji-panel span {
+      cursor: pointer;
+      padding: 3px 5px;
+    }
+    .emoji-category {
+      width: 100%;
+      margin: 10px 0 5px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .toggle-button {
+      background-color: #eee;
+      border: 1px solid #ccc;
+      padding: 5px 10px;
+      font-size: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
   <h2>📝 Редактор постов для Discord и Twitter</h2>
   <p>Редактируй пост с эмодзи, текстом и ссылками. Всё сохраняется автоматически в браузере.</p>
+
+  <button class="toggle-button" onclick="toggleEmojiPanel()">🙂 Показать / скрыть панель эмодзи</button>
+
+  <div class="emoji-panel" id="emojiPanel">
+    <div class="emoji-category">🔥 Популярные:</div>
+    <span onclick="insertEmoji('🔥')">🔥</span>
+    <span onclick="insertEmoji('🚀')">🚀</span>
+    <span onclick="insertEmoji('✅')">✅</span>
+    <span onclick="insertEmoji('🎉')">🎉</span>
+    <span onclick="insertEmoji('💰')">💰</span>
+    <span onclick="insertEmoji('📈')">📈</span>
+    <div class="emoji-category">😂 Смешные:</div>
+    <span onclick="insertEmoji('😄')">😄</span>
+    <span onclick="insertEmoji('😎')">😎</span>
+    <span onclick="insertEmoji('🤔')">🤔</span>
+    <span onclick="insertEmoji('👀')">👀</span>
+    <span onclick="insertEmoji('👋')">👋</span>
+    <div class="emoji-category">🧠 DeFi & Web3:</div>
+    <span onclick="insertEmoji('⚡')">⚡</span>
+    <span onclick="insertEmoji('🔐')">🔐</span>
+    <span onclick="insertEmoji('🔗')">🔗</span>
+    <span onclick="insertEmoji('📛')">📛</span>
+    <div class="emoji-category">🐾 Животные:</div>
+    <span onclick="insertEmoji('🐶')">🐶</span>
+    <span onclick="insertEmoji('🐱')">🐱</span>
+    <span onclick="insertEmoji('🦊')">🦊</span>
+    <span onclick="insertEmoji('🐢')">🐢</span>
+    <span onclick="insertEmoji('🐳')">🐳</span>
+    <div class="emoji-category">🌍 Флаги:</div>
+    <span onclick="insertEmoji('🇷🇺')">🇷🇺</span>
+    <span onclick="insertEmoji('🇺🇸')">🇺🇸</span>
+    <span onclick="insertEmoji('🇪🇺')">🇪🇺</span>
+    <span onclick="insertEmoji('🇨🇳')">🇨🇳</span>
+    <span onclick="insertEmoji('🇯🇵')">🇯🇵</span>
+  </div>
+
   <textarea id="editor" placeholder="Напиши пост здесь..."></textarea>
   <div class="info">Автосохранение включено. Данные хранятся только в вашем браузере.</div>
   <button onclick="copyEditor()">📋 Скопировать</button>
@@ -69,26 +135,15 @@
   <script>
     const editor = document.getElementById('editor');
     const preview = document.getElementById('preview');
+    const emojiPanel = document.getElementById('emojiPanel');
     const editorKey = 'postEditorContent';
 
     const emojiMap = {
-      ':bell:': '🔔',
-      ':name_badge:': '📛',
-      ':link:': '🔗',
-      ':closed_lock_with_key:': '🔐',
-      ':white_check_mark:': '✅',
-      ':new:': '🆕',
-      ':fire:': '🔥',
-      ':eyes:': '👀',
-      ':star:': '⭐',
-      ':rocket:': '🚀',
-      ':chart_with_upwards_trend:': '📈',
-      ':warning:': '⚠️',
-      ':tada:': '🎉',
-      ':moneybag:': '💰',
-      ':thinking_face:': '🤔',
-      ':smile:': '😄',
-      ':wave:': '👋'
+      ':bell:': '🔔', ':name_badge:': '📛', ':link:': '🔗', ':closed_lock_with_key:': '🔐',
+      ':white_check_mark:': '✅', ':new:': '🆕', ':fire:': '🔥', ':eyes:': '👀',
+      ':star:': '⭐', ':rocket:': '🚀', ':chart_with_upwards_trend:': '📈',
+      ':warning:': '⚠️', ':tada:': '🎉', ':moneybag:': '💰', ':thinking_face:': '🤔',
+      ':smile:': '😄', ':wave:': '👋'
     };
 
     function updatePreview() {
@@ -104,6 +159,21 @@
       editor.value = text;
       localStorage.setItem(editorKey, text);
       updatePreview();
+    }
+
+    function insertEmoji(emoji) {
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      const text = editor.value;
+      editor.value = text.slice(0, start) + emoji + text.slice(end);
+      editor.focus();
+      editor.selectionStart = editor.selectionEnd = start + emoji.length;
+      localStorage.setItem(editorKey, editor.value);
+      updatePreview();
+    }
+
+    function toggleEmojiPanel() {
+      emojiPanel.style.display = emojiPanel.style.display === 'none' ? 'flex' : 'none';
     }
 
     window.addEventListener('DOMContentLoaded', () => {
