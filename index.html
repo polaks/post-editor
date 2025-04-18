@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Редактор постов</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      font-size: 16px;
+      font-family: sans-serif;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      margin-bottom: 10px;
+    }
+    .info {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-bottom: 10px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+    .preview {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      font-size: 15px;
+      white-space: pre-wrap;
+      margin-top: 10px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    }
+    .label {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>📝 Редактор постов для Discord и Twitter</h2>
+  <p>Редактируй пост с эмодзи, текстом и ссылками. Всё сохраняется автоматически в браузере.</p>
+  <textarea id="editor" placeholder="Напиши пост здесь..."></textarea>
+  <div class="info">Автосохранение включено. Данные хранятся только в вашем браузере.</div>
+  <button onclick="copyEditor()">📋 Скопировать</button>
+  <button onclick="clearEditor()">🧹 Очистить</button>
+  <button onclick="replaceEmojiCodes()">🔁 Преобразовать :emoji: → 😊</button>
+
+  <div class="label">Предпросмотр:</div>
+  <div class="preview" id="preview"></div>
+
+  <script>
+    const editor = document.getElementById('editor');
+    const preview = document.getElementById('preview');
+    const editorKey = 'postEditorContent';
+
+    const emojiMap = {
+      ':bell:': '🔔',
+      ':name_badge:': '📛',
+      ':link:': '🔗',
+      ':closed_lock_with_key:': '🔐',
+      ':white_check_mark:': '✅',
+      ':new:': '🆕',
+      ':fire:': '🔥',
+      ':eyes:': '👀',
+      ':star:': '⭐',
+      ':rocket:': '🚀',
+      ':chart_with_upwards_trend:': '📈',
+      ':warning:': '⚠️',
+      ':tada:': '🎉',
+      ':moneybag:': '💰',
+      ':thinking_face:': '🤔',
+      ':smile:': '😄',
+      ':wave:': '👋'
+    };
+
+    function updatePreview() {
+      preview.textContent = editor.value;
+    }
+
+    function replaceEmojiCodes() {
+      let text = editor.value;
+      for (const code in emojiMap) {
+        const regex = new RegExp(code.replace(/([.*+?^=!:${}()|[\]\\])/g, "\\$1"), 'g');
+        text = text.replace(regex, emojiMap[code]);
+      }
+      editor.value = text;
+      localStorage.setItem(editorKey, text);
+      updatePreview();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem(editorKey);
+      if (saved) {
+        editor.value = saved;
+      }
+      updatePreview();
+    });
+
+    editor.addEventListener('input', () => {
+      localStorage.setItem(editorKey, editor.value);
+      updatePreview();
+    });
+
+    function copyEditor() {
+      editor.select();
+      document.execCommand('copy');
+      alert('Пост скопирован!');
+    }
+
+    function clearEditor() {
+      if (confirm('Очистить текст?')) {
+        editor.value = '';
+        localStorage.removeItem(editorKey);
+        updatePreview();
+      }
+    }
+  </script>
+</body>
+</html>
